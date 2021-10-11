@@ -1,0 +1,6 @@
+(sedeplace a c)
+(prend caisse c bas)
+(sedeplace c b)
+(depose caisse b bas)
+(montecaisse b)
+(prend bananes b haut)
