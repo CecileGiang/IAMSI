@@ -1,0 +1,70 @@
+%%% PROBLEME ASP %%%
+%Déclaration des types (domain)
+entite(X):-animal(X).
+entite(X):-objet(X).
+%Déclaration des prédicats (domain)
+pred(situe(X,Y)):-entite(X),position(Y).
+pred(niveau(X,Y)):-entite(X),hauteur(Y).
+pred(possede(X,Y)):-animal(X),objet(Y).
+pred(mainsVides).
+%Déclaration de l'action seDeplace
+action(seDeplace(X,Y)):-position(X),position(Y).
+%Préconditions
+pre(seDeplace(X,Y),situe(singe,X)):-action(seDeplace(X,Y)).
+pre(seDeplace(X,Y),niveau(singe,bas)):-action(seDeplace(X,Y)).
+%Effets
+add(seDeplace(X,Y),situe(singe,Y)):-action(seDeplace(X,Y)).
+del(seDeplace(X,Y),situe(singe,X)):-action(seDeplace(X,Y)).
+%Déclaration de l'action prend
+action(prend(X,POS,NIV)):-objet(X),position(POS),hauteur(NIV).
+%Préconditions
+pre(prend(X,POS,NIV),situe(singe,POS)):-action(prend(X,POS,NIV)).
+pre(prend(X,POS,NIV),situe(X,POS)):-action(prend(X,POS,NIV)).
+pre(prend(X,POS,NIV),niveau(singe,NIV)):-action(prend(X,POS,NIV)).
+pre(prend(X,POS,NIV),niveau(X,NIV)):-action(prend(X,POS,NIV)).
+pre(prend(X,POS,NIV),mainsVides):-action(prend(X,POS,NIV)).
+%Effets
+add(prend(X,POS,NIV),possede(singe,X)):-action(prend(X,POS,NIV)).
+del(prend(X,POS,NIV),situe(X,POS)):-action(prend(X,POS,NIV)).
+del(prend(X,POS,NIV),niveau(X,NIV)):-action(prend(X,POS,NIV)).
+del(prend(X,POS,NIV),mainsVides):-action(prend(X,POS,NIV)).
+%Déclaration de l'action depose
+action(depose(X,POS,NIV)):-objet(X),position(POS),hauteur(NIV).
+%Préconditions
+pre(depose(X,POS,NIV),possede(singe,X)):-action(depose(X,POS,NIV)).
+pre(depose(X,POS,NIV),situe(singe,POS)):-action(depose(X,POS,NIV)).
+pre(depose(X,POS,NIV),niveau(singe,NIV)):-action(depose(X,POS,NIV)).
+%Effets
+add(depose(X,POS,NIV),situe(X,POS)):-action(depose(X,POS,NIV)).
+add(depose(X,POS,NIV),niveau(X,NIV)):-action(depose(X,POS,NIV)).
+add(depose(X,POS,NIV),mainsVides):-action(depose(X,POS,NIV)).
+del(depose(X,POS,NIV),possede(singe,X)):-action(depose(X,POS,NIV)).
+%Déclaration de l'action monteCaisse
+action(monteCaisse(POS)):-position(POS).
+%Préconditions
+pre(monteCaisse(POS),situe(singe,POS)):-action(monteCaisse(POS)).
+pre(monteCaisse(POS),situe(caisse,POS)):-action(monteCaisse(POS)).
+pre(monteCaisse(POS),niveau(singe,bas)):-action(monteCaisse(POS)).
+pre(monteCaisse(POS),niveau(caisse,bas)):-action(monteCaisse(POS)).
+%Effets
+add(monteCaisse(POS),niveau(singe,haut)):-action(monteCaisse(POS)).
+del(monteCaisse(POS),niveau(singe,bas)):-action(monteCaisse(POS)).
+%Déclaration des prédicats (domain)
+animal(singe).
+objet(bananes).
+objet(caisse).
+hauteur(haut).
+hauteur(bas).
+position(a).
+position(b).
+position(c).
+%Etat initial (problem)
+init(situe(singe,a)).
+init(situe(bananes,b)).
+init(situe(caisse,c)).
+init(niveau(singe,bas)).
+init(niveau(bananes,haut)).
+init(niveau(caisse,bas)).
+init(mainsVides).
+%But (problem)
+but(possede(singe,bananes)).
