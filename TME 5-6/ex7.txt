@@ -1,0 +1,65 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% -------------- EXERCICE 7 - Championnat équilibré -------------- %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ------------------------ EXERCICE BONUS ------------------------ %
+
+% Nombre d'équipes participantes
+#const ne = 4.
+
+% Nombre de semaines (durée du championnat)
+#const ns = 3.
+
+% Nombre de jours de matchs (2 matchs par semaine)
+#const nj = 2 * ns.
+
+% Génération des équipes, semaines et jours de matchs
+equipe(1..ne).
+semaine(1..ns).
+jour(mercredi;dimanche).
+
+#show match/4.
+
+% Génération de tous les matchs possibles
+% L'équipe X joue à domicile, l'équipe Y joue à l'extérieur
+1 { match(X, Y, S, J) : semaine(S), jour(J) } 1 :- equipe(X), equipe(Y), X != Y.
+
+% Chaque équipe ne peut jouer plus d'un match par jour
+:- match(X, Y, S, J), match(X, YY, S, J), equipe(X;Y;YY), semaine(S), jour(J), Y!=YY.
+:- match(X, Y, S, J), match(YY, X, S, J), equipe(X;Y;YY), semaine(S), jour(J).
+:- match(Y, X, S, J), match(YY, X, S, J), equipe(X;Y;YY), semaine(S), jour(J), Y!=YY.
+
+% Deux matchs par jour au maximum
+:- match(X, Y, S, J), match(XX, YY, S, J), match(XXX, YYY, S, J), X<XX, XX<XXX, semaine(S), jour(J).
+
+
+%%%%%%%%%%%%%%%%%%%% CONTRAINTES D'EQUILIBRES %%%%%%%%%%%%%%%%%%%%
+
+% --- Contrainte 1: pour chaque équipe, au moins pext% de ses matchs à l'extérieur sont joués le dimanche
+
+#const pext = 50.
+
+% Pour chaque équipe, on compte le nombre de matchs joués à l'extérieur (nbext)
+1 { exterieur(X, dimanche) : equipe(X) } 1 :- match(Y, X, S, dimanche), equipe(Y), semaine(S).
+nbext(X, N) :- N = { exterieur(X, dimanche) }, equipe(X).
+
+% Chaque équipe doit jouer 2 * (ne-1) matchs en tout
+:- nbext(X, N), equipe(X), N >= ( (2 * (ne-1)) * pext) / 100.
+
+
+% --- Contrainte 2: pour chaque équipe, au moins pdom% de ses matchs à domicile sont joués le dimanche
+
+#const pdom = 40.
+
+% Pour chaque équipe, on compte le nombre de matchs joués à domicile (nbdom)
+1 { domicile(X, dimanche) : equipe(X) } 1 :- match(X, Y, S, dimanche), equipe(Y), semaine(S).
+nbdom(X, N) :- N = { domicile(X, dimanche) }, equipe(X).
+
+% Chaque équipe doit jouer 2 * (ne-1) matchs en tout
+:- nbdom(X, N), equipe(X), N >= ( (2 * (ne-1)) * pdom) / 100.
+
+% --- Contrainte 3: aucune équipe ne joue (strictement) plus de deux matchs consécutifs à l'extérieur
+:- match(Y, X, S, mercredi), match(YY, X, S, dimanche), equipe(X;Y;YY), semaine(S).
+
+% --- Contrainte 4: aucune équipe ne joue (strictement) plus de deux matchs consécutifs à domicile
+:- match(X, Y, S, mercredi), match(X, YY, S, dimanche), equipe(X;Y;YY), semaine(S).

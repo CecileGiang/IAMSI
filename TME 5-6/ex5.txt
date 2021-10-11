@@ -1,0 +1,90 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% --------------- EXERCICE 5 - Casse-tête logique ---------------- %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%% Ensembles d'interprétation
+
+position(1..5).
+nationalite(britannique; suedois; danois; norvegien; allemand).
+boisson(the; cafe; lait; biere; eau).
+cigarette(pallmall; dunhill; blend; bluemaster; princess).
+animal(chien; oiseaux; chat; chevaux; poissons).
+couleur(rouge; vert; blanc; jaune; bleu).
+
+%%% Contraintes d'intégrité
+
+% A chaque personne est associée une certaine boisson
+1 { boit(X,Y) : boisson(Y) } 1 :- nationalite(X).
+:- boit(X,Y), boit(XX, Y), X != XX, nationalite(X;XX), boisson(Y).
+
+% A chaque personne est associée un certain animal
+1 { possede(X,Y) : animal(Y) } 1 :- nationalite(X).
+:- possede(X,Y), possede(XX,Y), X != XX, nationalite(X;XX), animal(Y).
+
+% A chaque personne est associée une certaine marque de cigarette
+1 { fume(X,Y) : cigarette(Y) } 1 :- nationalite(X).
+:- fume(X,Y), fume(XX,Y), X != XX, nationalite(X;XX), cigarette(Y).
+
+% Chaque maison est de couleur différente
+1 { maison(X,Y) : couleur(Y) } 1 :- position(X).
+:- maison(X,Y), maison(XX,Y), X != XX, position(X;XX), couleur(Y).
+
+% Une personne habite dans une certaine maison
+1 { habite(X,Y) : position(Y) } 1 :- nationalite(X).
+:- habite(X,Y), habite(XX,Y), X != XX, nationalite(X;XX), position(Y).
+
+% Proposition 1 - Le britannique vit dans la maison rouge
+habite(britannique, X):- position(X), maison(X, rouge).
+
+% Proposition 2- Le suédois garde un chien
+possede(suedois, chien).
+
+% Proposition 3- Le danois boit du thé
+boit(danois, the).
+
+% Proposition 4- La maison verte est à gauche de la maison blanche
+maison(X, vert):- maison(XX, blanc), position(X;XX), X == XX - 1.
+
+% Proposition 5- Le propriétaire de la maison verte boit du café
+boit(X, cafe):- nationalite(X), habite(X, Y), position(Y), maison(Y, vert).
+
+% Proposition 6- La personne qui fume des Pall Mall possède des oiseaux
+possede(X, oiseaux) :- fume(X, pallmall), nationalite(X).
+
+% Proposition 7- Le propriétaire de la maison jaune fume des Dunhill
+fume(X, dunhill):- nationalite(X), habite(X, Y), position(Y), maison(Y, jaune).
+
+% Proposition 8- La personne qui vit dans la maison au centre boit du lait
+boit(X, lait):- nationalite(X), habite(X, 3).
+
+% Proposition 9- Le norvégien vit dans la première maison
+habite(norvegien, 1).
+
+% Proposition 10- La personne qui fume des Blend vit à côté de celle qui possède des chats
+|Y1-Y2| == 1 :- fume(X1, blend), possede(X2, chat), nationalite(X1;X2), habite(X1, Y1), habite(X2, Y2), position(Y1;Y2).
+
+% Proposition 11- La personne qui possède des chevaux vit à côté du fumeur de Dunhill
+|Y1-Y2| == 1 :- possede(X1, chevaux), fume(X2, dunhill), nationalite(X1;X2), habite(X1, Y1), habite(X2, Y2), position(Y1;Y2).
+
+% Proposition 12- La personne qui fume des Bluemaster boit de la bière
+boit(X, biere):- fume(X, bluemaster), nationalite(X).
+
+% Proposition 13- L'allemand fume des Princess
+fume(allemand, princess).
+
+% Proposition 14- Le norvégien vit à côté de la maison bleue
+|Y1-Y2| == 1 :- habite(norvegien, Y1), maison(Y2, bleu), position(Y1;Y2).
+
+% Proposition 15- La personne qui fume des Blend a un voisin qui boit de l'eau
+|Y1-Y2| == 1 :- fume(X1, blend), boit(X2, eau), nationalite(X1;X2), habite(X1, Y1), habite(X2, Y2), position(Y1;Y2).
+
+#show possede/2.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% RESULTATS %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Une seule combinaison possible
+%Answer: 1
+%possede(suedois,chien) possede(britannique,oiseaux) possede(norvegien,chat) possede(danois,chevaux) possede(allemand,poissons)
+%SATISFIABLE

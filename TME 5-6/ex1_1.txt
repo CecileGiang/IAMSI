@@ -1,0 +1,11 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% -------------- EXERCICE 1 - Premiers pas en ASP ---------------- %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Programme 1
+
+conges.
+temps_libre :- conges.
+sortie_cine :- temps_libre, conges.
+
+% Ensemble réponse obtenu: {{conges, temps_libre, sortie_cine}}
